@@ -7,12 +7,34 @@ const Container = styled.div`
   border-radius: 3px;
   padding: 8px;
   margin-bottom: 8px;
-  background-color: ${props => (props.isDragging ? 'lightgreen' : 'white')}
+  background-color: ${props => 
+    props.isDragDisabled
+      ? 'lightgrey'
+      : props.isDragging
+        ? 'pink'
+        : 'white'};
+  };
+  display: flex;
+  column-gap: 5px;
 `;
 
+const Handle = styled.div`
+  width: 20px;
+  height: 20px;
+  background-color: orange;
+  border-radius: 5px;
+`
+
 export default function Task({ task, index }) {
+  const isDragDisabled = task.id === 'task-1';
   return (
-    <Draggable draggableId={task.id} index={index}>
+    <Draggable 
+      draggableId={task.id}
+      index={index}
+      // Optional: we can remove all make all disable 
+      // isDragDisabled={task.id === 'task-1'}
+      isDragDisabled={isDragDisabled}
+    >
         {(provided, snapshot) => (
             /**
              * snapshot obj structure: 
@@ -23,10 +45,14 @@ export default function Task({ task, index }) {
              */
             <Container
                 { ...provided.draggableProps }
-                { ...provided.dragHandleProps}
+                // { ...provided.dragHandleProps} if we use handle transfer to child handle component
                 ref={provided.innerRef}
                 isDragging={snapshot.isDragging}
-            >{task.content}</Container>
+                isDragDisabled={isDragDisabled}
+            >
+              {/* If you use handle instead of drag all item add this handle */}
+              <Handle {...provided.dragHandleProps} />
+              {task.content}</Container>
         )}
     </Draggable>
   );
